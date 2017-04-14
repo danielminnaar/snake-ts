@@ -3,36 +3,42 @@ import { Rectangle } from "./Rectangle";
 
 export class Grid implements IShape {
 
-    draw(ctx: any, visible: boolean = false): void {
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.color;
-        var filled: boolean = false;
+    generate(maxX: number, maxY: number): Rectangle[] {
+        var horizontalBlocks = maxX / this.blockSize;
+        var verticalBlocks = maxY / this.blockSize;
+        // The gridSize should be the smaller of the two
+        this.gridSize = Math.round((horizontalBlocks > verticalBlocks ? verticalBlocks : horizontalBlocks));
+
         var blocksToDraw: number = (this.gridSize * this.gridSize);
         var blockCount: number = 0;
         while(blockCount < blocksToDraw) {
-            if (visible)
-                this.drawGridBlock(ctx);
-            this.cells.push(new Rectangle(this.lastX + this.lineWidth, this.lastY + this.lineWidth, this.blockSize, this.blockSize));
+            
+            this.cells.push(new Rectangle(this.lastX, this.lastY, this.blockSize, this.blockSize));
 
             if( this.currentBlockRight > this.totalGridSize) {
                 this.lastY += this.blockSize;
-                this.lastX = this.lineWidth;
+                this.lastX = 0;
             }
             else                
                 this.lastX += this.blockSize + this.lineWidth;
             
             blockCount++;
         }
-    }
-
-    public getGridCells(): Rectangle[] {
-        // Need to figure out a way of ensuring the cell sizes are neatly within the block sizes, given the line widths.
         return this.cells;
+    } 
 
+    draw(ctx: any): void {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.color;
+        if(this.cells) {
+            this.cells.forEach(cell => {
+                this.drawGridBlock(ctx, cell);    
+            });
+        }
     }
 
-    private drawGridBlock(ctx: any): void {
-        ctx.strokeRect(this.lastX, this.lastY + this.lineWidth, this.blockSize, this.blockSize);
+    private drawGridBlock(ctx: any, block: Rectangle): void {
+        ctx.strokeRect(block.x, block.y, block.width, block.height);
     }
 
     private get totalGridSize(): number {
@@ -57,13 +63,12 @@ export class Grid implements IShape {
     gridSize: number;
     cells: Rectangle[];
 
-    constructor(grid_size: number, block_size: number, color: string = "blue", lineWidth: number = 2) {
-        this.gridSize = grid_size;
+    constructor(block_size: number, color: string = "blue", lineWidth: number = 2) {
         this.blockSize = block_size;
         this.color = color;
         this.lineWidth = lineWidth;
-        this.lastX = this.lineWidth;
-        this.lastY = this.lineWidth;
+        this.lastX = 0;
+        this.lastY = 0;
         this.cells = new Array<Rectangle>();
     }
 
