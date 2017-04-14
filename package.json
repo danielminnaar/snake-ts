@@ -1,0 +1,33 @@
+{
+  "name": "snake-ts",
+  "version": "1.0.0",
+  "description": "Snake project in TypeScript",
+  "main": "index.html",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.6",
+    "browserify": "^14.3.0",
+    "typescript": "^2.2.2",
+    "tsify": "^3.0.1",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielminnaar/snake-ts.git"
+  },
+  "keywords": [
+    "snake",
+    "typescript",
+    "game"
+  ],
+  "author": "Daniel Minnaar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielminnaar/snake-ts/issues"
+  },
+  "homepage": "https://github.com/danielminnaar/snake-ts#readme"
+}
