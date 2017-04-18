@@ -2,10 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Rectangle_1 = require("./Rectangle");
 var Grid = (function () {
-    function Grid(grid_size, block_size, color, lineWidth) {
+    function Grid(block_size, color, lineWidth) {
         if (color === void 0) { color = "blue"; }
         if (lineWidth === void 0) { lineWidth = 2; }
-        this.gridSize = grid_size;
         this.blockSize = block_size;
         this.color = color;
         this.lineWidth = lineWidth;
@@ -13,32 +12,37 @@ var Grid = (function () {
         this.lastY = 0;
         this.cells = new Array();
     }
-    Grid.prototype.draw = function (ctx, visible) {
-        if (visible === void 0) { visible = false; }
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.color;
-        var filled = false;
+    Grid.prototype.generate = function (maxX, maxY) {
+        var horizontalBlocks = maxX / this.blockSize;
+        var verticalBlocks = maxY / this.blockSize;
+        // The gridSize should be the smaller of the two
+        this.gridSize = Math.round((horizontalBlocks > verticalBlocks ? verticalBlocks : horizontalBlocks));
         var blocksToDraw = (this.gridSize * this.gridSize);
         var blockCount = 0;
         while (blockCount < blocksToDraw) {
-            if (visible)
-                this.drawGridBlock(ctx);
-            this.cells.push(new Rectangle_1.Rectangle(this.lastX + this.lineWidth, this.lastY + this.lineWidth, this.blockSize, this.blockSize));
+            this.cells.push(new Rectangle_1.Rectangle(this.lastX, this.lastY, this.blockSize, this.blockSize));
             if (this.currentBlockRight > this.totalGridSize) {
                 this.lastY += this.blockSize;
-                this.lastX = this.lineWidth;
+                this.lastX = 0;
             }
             else
                 this.lastX += this.blockSize + this.lineWidth;
             blockCount++;
         }
-    };
-    Grid.prototype.getGridCells = function () {
-        // Need to figure out a way of ensuring the cell sizes are neatly within the block sizes, given the line widths.
         return this.cells;
     };
-    Grid.prototype.drawGridBlock = function (ctx) {
-        ctx.strokeRect(this.lastX, this.lastY + this.lineWidth, this.blockSize, this.blockSize);
+    Grid.prototype.draw = function (ctx, maxX, maxY) {
+        var _this = this;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.color;
+        if (this.cells) {
+            this.cells.forEach(function (cell) {
+                _this.drawGridBlock(ctx, cell);
+            });
+        }
+    };
+    Grid.prototype.drawGridBlock = function (ctx, block) {
+        ctx.strokeRect(block.x, block.y, block.width, block.height);
     };
     Object.defineProperty(Grid.prototype, "totalGridSize", {
         get: function () {

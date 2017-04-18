@@ -11,8 +11,17 @@ export class Rectangle implements IShape {
         this.lineWidth = lineWidth;
     }
     
-    draw(ctx: any): void {
-        throw new Error('Method not implemented.');
+    draw(ctx: CanvasRenderingContext2D, maxX: number, maxY: number): void {
+        this.scrollLeft(maxX);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    scrollLeft(wrapX: number): void {
+        this.x = this.x - this.width;
+        if( (this.x + this.width) <= 0)
+            this.x = wrapX;
+        
     }
     
     width: number;

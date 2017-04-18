@@ -1,5 +1,5 @@
 export interface IShape {
-    draw(ctx: any): void;
+    draw(ctx: CanvasRenderingContext2D, maxX: number, maxY: number): void;
     x: number;
     y: number;
     color: string;

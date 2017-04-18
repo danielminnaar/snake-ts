@@ -27,7 +27,7 @@ export class Grid implements IShape {
         return this.cells;
     } 
 
-    draw(ctx: any): void {
+    draw(ctx: CanvasRenderingContext2D, maxX: number, maxY: number): void {
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.color;
         if(this.cells) {

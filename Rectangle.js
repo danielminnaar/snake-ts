@@ -11,8 +11,14 @@ var Rectangle = (function () {
         this.color = color;
         this.lineWidth = lineWidth;
     }
-    Rectangle.prototype.draw = function (ctx) {
-        throw new Error('Method not implemented.');
+    Rectangle.prototype.draw = function (ctx, maxX, maxY) {
+        this.scrollLeft(maxX);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    };
+    Rectangle.prototype.scrollLeft = function (wrapX) {
+        if ((this.x + this.width) <= 0)
+            this.x = wrapX;
     };
     return Rectangle;
 }());
