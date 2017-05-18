@@ -4,10 +4,13 @@ export class Snake {
     constructor(grid: Rectangle[]) {
         this.grid = grid;
         this.snakeCells = new Array<Rectangle>();
-        this.snakeCells.push(this.grid[0]);
-        this.snakeCells.push(this.grid[1]);
-        this.snakeCells.push(this.grid[2]);
+        this.snakeCells.push(this.cloneCell(this.grid[0]));
+        this.snakeCells.push(this.cloneCell(this.grid[1]));
+        this.snakeCells.push(this.cloneCell(this.grid[2]));
+    }
 
+    private cloneCell(original: Rectangle): Rectangle {
+        return new Rectangle(original.x, original.y, original.width, original.height);
     }
 
     public draw(ctx: CanvasRenderingContext2D, maxX: number, maxY: number) {
@@ -19,8 +22,8 @@ export class Snake {
 
             switch(this.direction) {
                 case "left": {
-                    debugger;
                     // Move the snake cell to the previous x-cell in the grid
+                    this.snakeCells[i].y = this.snakeCells[0].y; // Re-align and follow the head
                     var leftCells: Rectangle[] = this.grid.filter(gc => gc.y == this.snakeCells[i].y && gc.x < this.snakeCells[i].x);
                     var leftGridCellIndex: number = this.searchClosestGridCellIndex(this.snakeCells[i].x, leftCells);
                     if ((leftGridCellIndex < 0) || leftCells[leftGridCellIndex].x == this.snakeCells[i].x) {
@@ -29,6 +32,37 @@ export class Snake {
                     }
                     else
                         this.snakeCells[i].x = leftCells[leftGridCellIndex].x;  //this.getNextLeftGridCell(this.snakeCells[i].x, this.snakeCells[i].y).x;
+                    break;
+                }
+                case "right": {
+                    // Move the snake cell to the next x-cell in the grid
+                    this.snakeCells[i].y = this.snakeCells[this.snakeCells.length -1].y; // Re-align and follow the head
+                    var rightCells: Rectangle[] = this.grid.filter(gc => gc.y == this.snakeCells[i].y && gc.x > this.snakeCells[i].x);
+                    var rightGridCellIndex: number = this.searchClosestGridCellIndex(this.snakeCells[i].x, rightCells);
+                    if ((rightGridCellIndex < 0) || rightCells[rightGridCellIndex].x == this.snakeCells[i].x) {
+                         var leftCells: Rectangle[] = this.grid.filter(gc => gc.y == this.snakeCells[i].y && gc.x < this.snakeCells[i].x);
+                         this.snakeCells[i].x = leftCells[0].x;
+                    }
+                    else
+                        this.snakeCells[i].x = rightCells[rightGridCellIndex].x;  //this.getNextLeftGridCell(this.snakeCells[i].x, this.snakeCells[i].y).x;
+                    break;
+                }
+                case "up": {
+                    // Move the snake cell to the previous y-cell in the grid
+                    this.snakeCells[i].x = this.snakeCells[0].x; // re-align and follow the head
+                    var topCells: Rectangle[] = this.grid.filter(gc => gc.y < this.snakeCells[i].y && gc.x == this.snakeCells[i].x);
+                    var topGridCellIndex: number = this.searchClosestGridCellIndex(this.snakeCells[i].y, topCells);
+                    if ((topGridCellIndex < 0) || topCells[topGridCellIndex].y == this.snakeCells[i].y) {
+                        // We need to switch direction
+                         var bottomCells: Rectangle[] = this.grid.filter(gc => gc.y > this.snakeCells[i].y && gc.x == this.snakeCells[i].x);
+                         this.snakeCells[i].y = bottomCells[bottomCells.length -1].y;
+                    }
+                    else
+                        this.snakeCells[i].y = topCells[topGridCellIndex].y;
+                    break;
+                }
+                default: {
+
                 }
                 
             }
@@ -52,25 +86,7 @@ export class Snake {
     }
     
 
-    private getNextLeftGridCell(x: number, y: number): Rectangle {
-          var leftCells: Rectangle[] = this.grid.filter(gc => gc.y == y && gc.x < x);
-          if(leftCells && leftCells.length > 0) {
-            // Find the closest x position in the grid
-            return leftCells[0];
-          }
-          else { // if we can't find anything to the left, loop back to the most-right
-            var rightCells: Rectangle[] = this.grid.filter(gc => gc.y == y && gc.x > x);
-            var mostRight: number = x;
-            rightCells.forEach(rc => {
-                if(rc.x > mostRight)
-                    mostRight = rc.x;
-            });
-            return rightCells.filter(rc => rc.x == mostRight)[0];
-          }
-    }
-
     grid: Rectangle[];
     snakeCells: Rectangle[];
-    direction: string = "left";
-
+    direction: string;
 }
